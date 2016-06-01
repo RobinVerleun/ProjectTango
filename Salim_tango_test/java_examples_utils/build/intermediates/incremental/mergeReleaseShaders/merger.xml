@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet config="main"><source path="/home/salim/Documents/Tango/Salim_tango_test/java_examples_utils/src/main/shaders"/></dataSet><dataSet config="release"><source path="/home/salim/Documents/Tango/Salim_tango_test/java_examples_utils/src/release/shaders"/></dataSet></merger>

@@ -1,0 +1,37 @@
+#MYTANGOTEST BUGS
+
+
+#Gradle errors
+
+- Issue Error:Error converting bytecode to dex:
+Cause: com.android.dex.DexException: Multiple dex files define Lcom/google/atap/tango/TangoClientLibLoader;
+
+To run dex in process, the Gradle daemon needs a larger heap.
+It currently has approximately 910 MB.
+For faster builds, increase the maximum heap size for the Gradle daemon to more than 2048 MB.
+To do this set org.gradle.jvmargs=-Xmx2048M in the project gradle.properties.
+For more information see https://docs.gradle.org/current/userguide/build_environment.html
+
+solved by set org.gradle.jvmargs=-Xmx2048M in the project gradle.properties.
+
+- Error:Execution failed for task ':app:transformClassesWithDexForDebug'.
+> com.android.build.api.transform.TransformException: com.android.ide.common.process.ProcessException: java.util.concurrent.ExecutionException: com.android.ide.common.process.ProcessException: org.gradle.process.internal.ExecException: Process 'command '/usr/lib/jvm/java-8-oracle/bin/java'' finished with non-zero exit value 2
+
+solved by set org.gradle.jvmargs=-Xmx2048M in the project gradle.properties.
+
+- Error:Execution failed for task ':app:transformClassesWithDexForDebug'.
+> com.android.build.api.transform.TransformException: com.android.ide.common.process.ProcessException: java.util.concurrent.ExecutionException: com.android.dex.DexException: Multiple dex files define Lcom/google/atap/tango/TangoClientLibLoader;
+
+- Note: All these gradle issues is caused by having two instances of java-examples-utils, and build.gradle being ruined
+
+#Other errors
+
+I solved this by removing one instance, and then a build clean.
+
+- Tango Permission Denied. No android.permission.CAMERA permission.
+
+must of forgot to add permissions.
+
+- Issue where the sphere dissapears when being rendered.
+
+used getCurrentCamera().setZ(3f) in the renderer. Had to replace it with earthSphere.setPosition(0, 0, -3);

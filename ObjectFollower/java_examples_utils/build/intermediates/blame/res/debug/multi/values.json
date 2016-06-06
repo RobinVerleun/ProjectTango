@@ -1,6 +1,6 @@
 [
     {
-        "outputFile": "/home/salim/Documents/Tango/ProjectTango/ObjectFollower/java_examples_utils/build/intermediates/res/merged/debug/values/values.xml",
+        "outputFile": "C:\\Users\\Robin\\Documents\\GitHub\\ProjectTango\\ObjectFollower\\java_examples_utils\\build\\intermediates\\res\\merged\\debug\\values\\values.xml",
         "map": [
             {
                 "to": {
@@ -12,7 +12,7 @@
                     "endOffset": 198
                 },
                 "from": {
-                    "file": "/home/salim/Documents/Tango/ProjectTango/ObjectFollower/java_examples_utils/build/intermediates/exploded-aar/org.rajawali3d/rajawali/1.0.294-SNAPSHOT/res/values/values.xml",
+                    "file": "C:\\Users\\Robin\\Documents\\GitHub\\ProjectTango\\ObjectFollower\\java_examples_utils\\build\\intermediates\\exploded-aar\\org.rajawali3d\\rajawali\\1.0.294-SNAPSHOT\\res\\values\\values.xml",
                     "position": {
                         "startLine": 4,
                         "startColumn": 4,
@@ -32,7 +32,7 @@
                     "endOffset": 244
                 },
                 "from": {
-                    "file": "/home/salim/Documents/Tango/ProjectTango/ObjectFollower/java_examples_utils/build/intermediates/exploded-aar/org.rajawali3d/rajawali/1.0.294-SNAPSHOT/res/values/values.xml",
+                    "file": "C:\\Users\\Robin\\Documents\\GitHub\\ProjectTango\\ObjectFollower\\java_examples_utils\\build\\intermediates\\exploded-aar\\org.rajawali3d\\rajawali\\1.0.294-SNAPSHOT\\res\\values\\values.xml",
                     "position": {
                         "startLine": 8,
                         "startColumn": 4,
@@ -51,7 +51,7 @@
                     "endOffset": 289
                 },
                 "from": {
-                    "file": "/home/salim/Documents/Tango/ProjectTango/ObjectFollower/java_examples_utils/build/intermediates/exploded-aar/org.rajawali3d/rajawali/1.0.294-SNAPSHOT/res/values/values.xml",
+                    "file": "C:\\Users\\Robin\\Documents\\GitHub\\ProjectTango\\ObjectFollower\\java_examples_utils\\build\\intermediates\\exploded-aar\\org.rajawali3d\\rajawali\\1.0.294-SNAPSHOT\\res\\values\\values.xml",
                     "position": {
                         "startLine": 9,
                         "startColumn": 4,
@@ -70,7 +70,7 @@
                     "endOffset": 335
                 },
                 "from": {
-                    "file": "/home/salim/Documents/Tango/ProjectTango/ObjectFollower/java_examples_utils/build/intermediates/exploded-aar/org.rajawali3d/rajawali/1.0.294-SNAPSHOT/res/values/values.xml",
+                    "file": "C:\\Users\\Robin\\Documents\\GitHub\\ProjectTango\\ObjectFollower\\java_examples_utils\\build\\intermediates\\exploded-aar\\org.rajawali3d\\rajawali\\1.0.294-SNAPSHOT\\res\\values\\values.xml",
                     "position": {
                         "startLine": 10,
                         "startColumn": 4,
@@ -89,7 +89,7 @@
                     "endOffset": 381
                 },
                 "from": {
-                    "file": "/home/salim/Documents/Tango/ProjectTango/ObjectFollower/java_examples_utils/build/intermediates/exploded-aar/org.rajawali3d/rajawali/1.0.294-SNAPSHOT/res/values/values.xml",
+                    "file": "C:\\Users\\Robin\\Documents\\GitHub\\ProjectTango\\ObjectFollower\\java_examples_utils\\build\\intermediates\\exploded-aar\\org.rajawali3d\\rajawali\\1.0.294-SNAPSHOT\\res\\values\\values.xml",
                     "position": {
                         "startLine": 11,
                         "startColumn": 4,
@@ -108,7 +108,7 @@
                     "endOffset": 425
                 },
                 "from": {
-                    "file": "/home/salim/Documents/Tango/ProjectTango/ObjectFollower/java_examples_utils/build/intermediates/exploded-aar/org.rajawali3d/rajawali/1.0.294-SNAPSHOT/res/values/values.xml",
+                    "file": "C:\\Users\\Robin\\Documents\\GitHub\\ProjectTango\\ObjectFollower\\java_examples_utils\\build\\intermediates\\exploded-aar\\org.rajawali3d\\rajawali\\1.0.294-SNAPSHOT\\res\\values\\values.xml",
                     "position": {
                         "startLine": 12,
                         "startColumn": 4,
@@ -127,7 +127,7 @@
                     "endOffset": 469
                 },
                 "from": {
-                    "file": "/home/salim/Documents/Tango/ProjectTango/ObjectFollower/java_examples_utils/build/intermediates/exploded-aar/org.rajawali3d/rajawali/1.0.294-SNAPSHOT/res/values/values.xml",
+                    "file": "C:\\Users\\Robin\\Documents\\GitHub\\ProjectTango\\ObjectFollower\\java_examples_utils\\build\\intermediates\\exploded-aar\\org.rajawali3d\\rajawali\\1.0.294-SNAPSHOT\\res\\values\\values.xml",
                     "position": {
                         "startLine": 13,
                         "startColumn": 4,
@@ -146,7 +146,7 @@
                     "endOffset": 519
                 },
                 "from": {
-                    "file": "/home/salim/Documents/Tango/ProjectTango/ObjectFollower/java_examples_utils/build/intermediates/exploded-aar/org.rajawali3d/rajawali/1.0.294-SNAPSHOT/res/values/values.xml",
+                    "file": "C:\\Users\\Robin\\Documents\\GitHub\\ProjectTango\\ObjectFollower\\java_examples_utils\\build\\intermediates\\exploded-aar\\org.rajawali3d\\rajawali\\1.0.294-SNAPSHOT\\res\\values\\values.xml",
                     "position": {
                         "startLine": 14,
                         "startColumn": 4,
@@ -165,7 +165,7 @@
                     "endOffset": 572
                 },
                 "from": {
-                    "file": "/home/salim/Documents/Tango/ProjectTango/ObjectFollower/java_examples_utils/build/intermediates/exploded-aar/org.rajawali3d/rajawali/1.0.294-SNAPSHOT/res/values/values.xml",
+                    "file": "C:\\Users\\Robin\\Documents\\GitHub\\ProjectTango\\ObjectFollower\\java_examples_utils\\build\\intermediates\\exploded-aar\\org.rajawali3d\\rajawali\\1.0.294-SNAPSHOT\\res\\values\\values.xml",
                     "position": {
                         "startLine": 15,
                         "startColumn": 4,
@@ -185,7 +185,7 @@
                     "endOffset": 729
                 },
                 "from": {
-                    "file": "/home/salim/Documents/Tango/ProjectTango/ObjectFollower/java_examples_utils/build/intermediates/exploded-aar/org.rajawali3d/rajawali/1.0.294-SNAPSHOT/res/values/values.xml",
+                    "file": "C:\\Users\\Robin\\Documents\\GitHub\\ProjectTango\\ObjectFollower\\java_examples_utils\\build\\intermediates\\exploded-aar\\org.rajawali3d\\rajawali\\1.0.294-SNAPSHOT\\res\\values\\values.xml",
                     "position": {
                         "startLine": 16,
                         "startColumn": 4,
@@ -205,13 +205,13 @@
                     "endOffset": 1412
                 },
                 "from": {
-                    "file": "/home/salim/Documents/Tango/ProjectTango/ObjectFollower/java_examples_utils/src/main/res/values/strings.xml",
+                    "file": "C:\\Users\\Robin\\Documents\\GitHub\\ProjectTango\\ObjectFollower\\java_examples_utils\\src\\main\\res\\values\\strings.xml",
                     "position": {
                         "startLine": 17,
                         "startColumn": 4,
-                        "startOffset": 607,
+                        "startOffset": 624,
                         "endColumn": 56,
-                        "endOffset": 659
+                        "endOffset": 676
                     }
                 }
             },
@@ -225,14 +225,14 @@
                     "endOffset": 1703
                 },
                 "from": {
-                    "file": "/home/salim/Documents/Tango/ProjectTango/ObjectFollower/java_examples_utils/src/main/res/values/styles.xml",
+                    "file": "C:\\Users\\Robin\\Documents\\GitHub\\ProjectTango\\ObjectFollower\\java_examples_utils\\src\\main\\res\\values\\styles.xml",
                     "position": {
                         "startLine": 21,
                         "startColumn": 4,
-                        "startOffset": 776,
+                        "startOffset": 797,
                         "endLine": 27,
                         "endColumn": 12,
-                        "endOffset": 1062
+                        "endOffset": 1089
                     }
                 }
             },
@@ -246,14 +246,14 @@
                     "endOffset": 1863
                 },
                 "from": {
-                    "file": "/home/salim/Documents/Tango/ProjectTango/ObjectFollower/java_examples_utils/src/main/res/values/styles.xml",
+                    "file": "C:\\Users\\Robin\\Documents\\GitHub\\ProjectTango\\ObjectFollower\\java_examples_utils\\src\\main\\res\\values\\styles.xml",
                     "position": {
                         "startLine": 30,
                         "startColumn": 4,
-                        "startOffset": 1100,
+                        "startOffset": 1130,
                         "endLine": 32,
                         "endColumn": 12,
-                        "endOffset": 1255
+                        "endOffset": 1287
                     }
                 }
             }

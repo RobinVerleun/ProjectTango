@@ -20,6 +20,8 @@ import com.google.atap.tangoservice.TangoPoseData;
 
 import android.content.Context;
 
+import android.graphics.drawable.GradientDrawable;
+import android.transition.Scene;
 import android.util.Log;
 import android.view.MotionEvent;
 
@@ -33,6 +35,7 @@ import org.rajawali3d.materials.textures.Texture;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.Quaternion;
 import org.rajawali3d.math.vector.Vector3;
+import org.rajawali3d.primitives.Cube;
 import org.rajawali3d.primitives.ScreenQuad;
 import org.rajawali3d.primitives.Sphere;
 import org.rajawali3d.renderer.RajawaliRenderer;
@@ -49,7 +52,6 @@ import com.projecttango.rajawali.ScenePoseCalculator;
  * method.
  */
 public class ObjectFollowerRenderer extends RajawaliRenderer {
-    private static final float CUBE_SIDE_LENGTH = 0.5f;
     private static final String TAG = ObjectFollowerRenderer.class.getSimpleName();
     private static final float OBJECT_SPEED = 0.01f;
 
@@ -142,15 +144,17 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
     public synchronized void updateObjectPose(Vector3 onTouchPose) {
         mObjectPose = new Pose(onTouchPose, new Quaternion(0.0, 0.0, 0.0, 0.0));
         mObjectPoseUpdated = true;
+
     }
 
     public synchronized void travelPose(TangoPoseData currentPose){
-        System.out.println("X: " + currentPose.translation[0] + " Z: " + currentPose.translation[1]+ " Y: " + currentPose.translation[2]);
         Vector3 coordinates = calculateTravel(currentPose);
 
-        mObject.moveForward(coordinates.y);
+
+        mObject.moveForward(coordinates.z);
         mObject.moveRight(coordinates.x);
-        mObject.moveUp(coordinates.z);
+        mObject.moveUp(coordinates.y);
+
     }
 
     /**
@@ -210,12 +214,14 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
         double Result0, Result1, Result2;
 
         Vector3 ObjCoord = mObject.getPosition();
-        Result0 = ((mDevicePose.translation[0] - ObjCoord.x) * (OBJECT_SPEED));
-        Result1 = ((mDevicePose.translation[1] - ObjCoord.z) * (OBJECT_SPEED));
-        Result2 = ((mDevicePose.translation[2] - ObjCoord.y) * (OBJECT_SPEED));
+        Result0 = ((mDevicePose.translation[0] - ObjCoord.x) * (OBJECT_SPEED)); //Horizontal Movement
+        Result1 = ((-1 * mDevicePose.translation[1] - ObjCoord.z) * (OBJECT_SPEED)); //Forward back Movement; Note: Tango Z-axis is negative of object Z-axis
+        Result2 = ((mDevicePose.translation[2] - ObjCoord.y) * (OBJECT_SPEED)); //Vertical Movement
 
 
-        return new Vector3(Result0, Result1, Result2);
+        // System.out.println("Z Object Pose: " +  ObjCoord.z + "|||| Z Device Pose: " + mDevicePose.translation[1]);
+
+        return new Vector3(Result0, Result2, Result1);
     }
 
     @Override

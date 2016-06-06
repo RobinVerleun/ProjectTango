@@ -16,6 +16,7 @@
 
 package com.example.salim.objectfollower;
 
+import com.example.salim.objectfollower.ObjectFollowerRenderer;
 import com.google.atap.tangoservice.Tango;
 import com.google.atap.tangoservice.Tango.OnTangoUpdateListener;
 import com.google.atap.tangoservice.TangoCameraIntrinsics;
@@ -45,31 +46,28 @@ import com.projecttango.rajawali.DeviceExtrinsics;
 import com.projecttango.rajawali.ScenePoseCalculator;
 import com.projecttango.tangosupport.TangoPointCloudManager;
 import com.projecttango.tangosupport.TangoSupport;
-import com.projecttango.tangosupport.TangoSupport.IntersectionPointPlaneModelPair;
 
 /**
- * Created by Robin and Salim. This is based of the Plane Fitting example from the java
- * tango examples
- *
- * An example showing how to use the Tango APIs to create an augmented reality application
- * that uses depth perception to detect flat surfaces on the real world.
- * This example displays a cube in space. whenever the user clicks on the screen, the cube is placed
- * flush with the surface detected with the depth camera in the position clicked.
+ * An example demonstrating a potential feature for a future Tango Application developed my Salim
+ * Benkhaled and Robin Verleun. The code places a sphere (known as the Object) on a location
+ * detected by the Tango depth sensor, and begins to close the distance between the Object and the
+ * Tango device in real time. The speed of the Object is scaled based on the distance between
+ * the Tango and the Object
  *
  * This example uses Rajawali for the OpenGL rendering. This includes the color camera image in the
- * background and the cube with instructions positioned in space or in the last surface detected.
+ * background and the Object with a texture positioned in space.
  * This part is implemented in the {@code AugmentedRealityRenderer} class, like a regular Rajawali
  * application.
  *
- * This example focuses on using the depth sensor data to detect a plane and position it on the
- * corresponding position in the 3D OpenGL space.
- *
  * For more details on the augmented reality effects, including color camera texture rendering,
- * see java_augmented_reality_example or java_hello_video_example.
+ * see java_augmented_reality_example or java_hello_video_example in the google Project Tango
+ * examples.
  *
  * Note that it is important to include the KEY_BOOLEAN_LOWLATENCYIMUINTEGRATION
  * configuration parameter in order to achieve best results synchronizing the
  * Rajawali virtual world with the RGB camera.
+ *
+ * This code is heavily based on the Gooled Project Tango Plane Fitting example code.
  */
 public class ObjectFollowerActivity extends Activity implements View.OnTouchListener {
     private static final String TAG = ObjectFollowerActivity.class.getSimpleName();
@@ -83,12 +81,12 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
     private Tango mTango;
     private boolean mIsConnected = false;
     private double mCameraPoseTimestamp = 0;
-    private boolean objectPlaced = false;
 
     // Texture rendering related fields
     // NOTE: Naming indicates which thread is in charge of updating this variable
     private int mConnectedTextureIdGlThread = INVALID_TEXTURE_ID;
     private AtomicBoolean mIsFrameAvailableTangoThread = new AtomicBoolean(false);
+    private AtomicBoolean objectPlaced = new AtomicBoolean(false);
     private double mRgbTimestampGlThread;
 
     public static final TangoCoordinateFramePair FRAME_PAIR = new TangoCoordinateFramePair(
@@ -166,8 +164,6 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
         config.putBoolean(TangoConfig.KEY_BOOLEAN_COLORCAMERA, true);
         mTango.connect(config);
 
-        // No need to add any coordinate frame pairs since we are not
-        // using pose data. So just initialize.
         ArrayList<TangoCoordinateFramePair> framePairs = new ArrayList<TangoCoordinateFramePair>();
         framePairs.add(new TangoCoordinateFramePair(
                 TangoPoseData.COORDINATE_FRAME_START_OF_SERVICE,
@@ -177,9 +173,9 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
         mTango.connectListener(framePairs, new OnTangoUpdateListener() {
             @Override
             public void onPoseAvailable(TangoPoseData pose) {
-               if(objectPlaced){
-                   mRenderer.travelPose(pose);
-               }
+                if(objectPlaced.get()){
+                    mRenderer.travelPose(pose);
+                }
             }
 
             @Override
@@ -308,25 +304,25 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
+        objectPlaced.set(false);
         if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
             // Calculate click location in u,v (0;1) coordinates.
             float u = motionEvent.getX() / view.getWidth();
             float v = motionEvent.getY() / view.getHeight();
-
             try {
                 // Fit a plane on the clicked point using the latest poiont cloud data
                 // Synchronize against concurrent access to the RGB timestamp in the OpenGL thread
                 // and a possible service disconnection due to an onPause event.
                 Vector3 rgbPoint;
                 synchronized (this) {
-                    rgbPoint = doFitPlane(u, v, mRgbTimestampGlThread);
+                    rgbPoint = getDepthAtTouchPosition(u, v, mRgbTimestampGlThread);
                 }
 
                 if (rgbPoint != null) {
                     // Update the position of the rendered cube to the pose of the detected plane
                     // This update is made thread safe by the renderer
                     mRenderer.updateObjectPose(rgbPoint);
-                    objectPlaced = true;
+                    objectPlaced.set(true);
                 }
 
             } catch (TangoException t) {
@@ -345,14 +341,14 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
         return true;
     }
 
-    /**
-     * Use the TangoSupport library with point cloud data to calculate the plane
-     * of the world feature pointed at the location the camera is looking.
-     * It returns the pose of the fitted plane in a TangoPoseData structure.
-     */
-    private Vector3 doFitPlane(float u, float v, double rgbTimestamp) {
-        TangoXyzIjData xyzIj = mPointCloudManager.getLatestXyzIj();
 
+    /**
+     * Use the TangoSupport library with point cloud data to calculate the depth
+     * of the point closest to where the user touches the screen. It returns a
+     * Vector3 in openGL world space.
+     */
+    private Vector3 getDepthAtTouchPosition(float u, float v, double rgbTimestamp) {
+        TangoXyzIjData xyzIj = mPointCloudManager.getLatestXyzIj();
         if (xyzIj == null) {
             return null;
         }
@@ -374,6 +370,5 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
                 new Vector3(point[0], point[1], point[2]),
                 ScenePoseCalculator.matrixToTangoPose(mExtrinsics.getDeviceTDepthCamera()),
                 mTango.getPoseAtTime(rgbTimestamp, FRAME_PAIR));
-
     }
 }

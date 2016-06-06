@@ -1,6 +1,6 @@
 [
     {
-        "outputFile": "/home/salim/Documents/Tango/ProjectTango/ObjectFollower/java_examples_utils/build/intermediates/res/merged/debug/values-v11/values-v11.xml",
+        "outputFile": "C:\\Users\\Robin\\Documents\\GitHub\\ProjectTango\\ObjectFollower\\java_examples_utils\\build\\intermediates\\res\\merged\\debug\\values-v11\\values-v11.xml",
         "map": [
             {
                 "to": {
@@ -12,14 +12,14 @@
                     "endOffset": 187
                 },
                 "from": {
-                    "file": "/home/salim/Documents/Tango/ProjectTango/ObjectFollower/java_examples_utils/src/main/res/values-v11/styles.xml",
+                    "file": "C:\\Users\\Robin\\Documents\\GitHub\\ProjectTango\\ObjectFollower\\java_examples_utils\\src\\main\\res\\values-v11\\styles.xml",
                     "position": {
                         "startLine": 21,
                         "startColumn": 4,
-                        "startOffset": 767,
+                        "startOffset": 788,
                         "endLine": 23,
                         "endColumn": 12,
-                        "endOffset": 899
+                        "endOffset": 922
                     }
                 }
             }

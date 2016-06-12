@@ -310,7 +310,7 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
             float u = motionEvent.getX() / view.getWidth();
             float v = motionEvent.getY() / view.getHeight();
             try {
-                // Fit a plane on the clicked point using the latest poiont cloud data
+                // Grab a chunk of the latest point cloud data
                 // Synchronize against concurrent access to the RGB timestamp in the OpenGL thread
                 // and a possible service disconnection due to an onPause event.
                 Vector3 rgbPoint;

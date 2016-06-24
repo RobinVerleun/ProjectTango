@@ -45,6 +45,7 @@ import javax.microedition.khronos.opengles.GL10;
 import com.projecttango.rajawali.DeviceExtrinsics;
 import com.projecttango.rajawali.Pose;
 import com.projecttango.rajawali.ScenePoseCalculator;
+import com.projecttango.tangosupport.TangoSupport;
 
 /**
  * Very simple example augmented reality renderer which displays a cube fixed in place.
@@ -53,7 +54,9 @@ import com.projecttango.rajawali.ScenePoseCalculator;
  */
 public class ObjectFollowerRenderer extends RajawaliRenderer {
     private static final String TAG = ObjectFollowerRenderer.class.getSimpleName();
-    private static final float OBJECT_SPEED = 0.01f;
+    private static final float OBJECT_SPEED = 0.007f;
+    private static final float OBJECT_THRESHOLD = 0.15f;
+
 
     // Augmented Reality related fields
     private ATexture mTangoCameraTexture;
@@ -110,7 +113,7 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
         material.setDiffuseMethod(new DiffuseMethod.Lambert());
 
         // Build a Cube and place it initially in the origin.
-        mObject = new Sphere(0.2f,24,24);
+        mObject = new Sphere(0.075f,24,24);
         mObject.setMaterial(material);
         mObject.setPosition(0, 0, -3);
         mObject.setRotation(Vector3.Axis.Z, 180);
@@ -126,11 +129,9 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
                 // Place the 3D object in the location of the detected plane.
                 mObject.setPosition(mObjectPose.getPosition());
                 mObject.setOrientation(mObjectPose.getOrientation());
-                // Move it forward by half of the size of the cube to make it
-                // flush with the plane surface.
-                //mObject.moveForward(CUBE_SIDE_LENGTH / 2.0f);
                 mObjectPoseUpdated = false;
             }
+
         }
 
 
@@ -147,14 +148,12 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
 
     }
 
-    public synchronized void travelPose(TangoPoseData currentPose){
+    public synchronized void moveSphere(TangoPoseData currentPose){
         Vector3 coordinates = calculateTravel(currentPose);
-
 
         mObject.moveForward(coordinates.z);
         mObject.moveRight(coordinates.x);
         mObject.moveUp(coordinates.y);
-
     }
 
     /**
@@ -210,19 +209,40 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
                                  int xPixelOffset, int yPixelOffset) {
     }
 
+    /*
+     * Method to calculate the amount the sphere should move when following the tango device.
+     */
     private Vector3 calculateTravel(TangoPoseData mDevicePose){
-        double Result0, Result1, Result2;
+        float dampening_Factor = OBJECT_THRESHOLD * OBJECT_SPEED;
+        double ResultX, ResultY, ResultZ;
 
         Vector3 ObjCoord = mObject.getPosition();
-        Result0 = ((mDevicePose.translation[0] - ObjCoord.x) * (OBJECT_SPEED)); //Horizontal Movement
-        Result1 = ((-1 * mDevicePose.translation[1] - ObjCoord.z) * (OBJECT_SPEED)); //Forward back Movement; Note: Tango Z-axis is negative of object Z-axis
-        Result2 = ((mDevicePose.translation[2] - ObjCoord.y) * (OBJECT_SPEED)); //Vertical Movement
 
+        if(Math.abs((mDevicePose.translation[0] - ObjCoord.x) * (OBJECT_SPEED)) > dampening_Factor) {
+            ResultX = ((mDevicePose.translation[0] - ObjCoord.x) * (OBJECT_SPEED)); //Horizontal Movement
+        } else { ResultX = 0; }
+        if(Math.abs((mDevicePose.translation[1] - ObjCoord.z) * (OBJECT_SPEED)) > dampening_Factor) {
+            ResultY = ((-1 * mDevicePose.translation[1] - ObjCoord.z) * (OBJECT_SPEED)); //Forward back Movement; Note: Tango Z-axis is negative of object Z-axis
+        } else { ResultY = 0; }
+        if(Math.abs((mDevicePose.translation[2] - ObjCoord.y) * (OBJECT_SPEED)) > dampening_Factor) {
+            ResultZ = ((mDevicePose.translation[2] - ObjCoord.y) * (OBJECT_SPEED)); //Vertical Movement
+        } else { ResultZ = 0; }
 
-        // System.out.println("Z Object Pose: " +  ObjCoord.z + "|||| Z Device Pose: " + mDevicePose.translation[1]);
-
-        return new Vector3(Result0, Result2, Result1);
+        return new Vector3(ResultX, ResultZ, ResultY);
     }
+
+    /*
+    private boolean isLookingAtObject(Object3D object, TangoPoseData poseData) {
+
+        Vector3 v = new Vector3(poseData.translation[0], poseData.translation[1], poseData.translation[3]);
+        v.multiply(object.getModelViewMatrix());
+
+        float pitch = (float) Math.atan2(v.y, -v.z);
+        float yaw = (float) Math.atan2(v.x, -v.z);
+
+        return (Math.abs(pitch) < ccIntrinsics.height) && (Math.abs(yaw) < ccIntrinsics.width);
+    }
+    */
 
     @Override
     public void onTouchEvent(MotionEvent event) {

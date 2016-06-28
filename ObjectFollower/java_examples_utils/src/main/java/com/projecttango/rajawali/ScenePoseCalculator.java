@@ -156,7 +156,6 @@ public final class ScenePoseCalculator {
         Vector3 p = m.getTranslation();
         Quaternion q = new Quaternion();
         q.fromMatrix(m);
-
         // NOTE: Rajawali quaternions use a left-hand rotation around the axis convention.
         q.conjugate();
 

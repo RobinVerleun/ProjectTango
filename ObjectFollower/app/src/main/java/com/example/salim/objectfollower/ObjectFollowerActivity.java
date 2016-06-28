@@ -35,6 +35,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
+import org.rajawali3d.math.Quaternion;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.scene.ASceneFrameCallback;
 import org.rajawali3d.surface.RajawaliSurfaceView;
@@ -72,12 +73,16 @@ import com.projecttango.tangosupport.TangoSupport;
 public class ObjectFollowerActivity extends Activity implements View.OnTouchListener {
     private static final String TAG = ObjectFollowerActivity.class.getSimpleName();
     private static final int INVALID_TEXTURE_ID = 0;
+    public static final int INDEX_PITCH = 0;
+    public static final int INDEX_YAW = 1;
+    public static final int INDEX_ROLL = 2;
 
     private RajawaliSurfaceView mSurfaceView;
     private ObjectFollowerRenderer mRenderer;
     private TangoCameraIntrinsics mIntrinsics;
     private DeviceExtrinsics mExtrinsics;
     private TangoPointCloudManager mPointCloudManager;
+    private MovementExtrinsics mMovementExtrinisics;
     private Tango mTango;
     private boolean mIsConnected = false;
     private double mCameraPoseTimestamp = 0;
@@ -101,6 +106,7 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
         mSurfaceView.setSurfaceRenderer(mRenderer);
         mSurfaceView.setOnTouchListener(this);
         mPointCloudManager = new TangoPointCloudManager();
+        mMovementExtrinisics = new MovementExtrinsics();
         setContentView(mSurfaceView);
     }
 
@@ -175,6 +181,8 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
             public void onPoseAvailable(TangoPoseData pose) {
                 if(objectPlaced.get()){
                     mRenderer.moveSphere(pose);
+                    Quaternion myQ = new Quaternion(pose.rotation[0], pose.rotation[1], pose.rotation[2], pose.rotation[3]);
+                    System.out.println(myQ.getYaw() * (180 / Math.PI)); //TODO WORKING HERE
                 }
             }
 
@@ -370,5 +378,30 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
                 new Vector3(point[0], point[1], point[2]),
                 ScenePoseCalculator.matrixToTangoPose(mExtrinsics.getDeviceTDepthCamera()),
                 mTango.getPoseAtTime(rgbTimestamp, FRAME_PAIR));
+    }
+
+    public double[] getEulerAnglesfromQuaternion(TangoPoseData tangoPose){
+        Quaternion mQuat = new Quaternion
+                (tangoPose.rotation[0], tangoPose.rotation[1], tangoPose.rotation[2], tangoPose.rotation[3]);
+        double[] EuelerAngles = {mQuat.getPitch(), mQuat.getYaw(), mQuat.getRoll()};
+        return EuelerAngles;
+    }
+
+    public double getPitchfromQuaternion(TangoPoseData tangoPose){
+        Quaternion mQuat = new Quaternion
+                (tangoPose.rotation[0], tangoPose.rotation[1], tangoPose.rotation[2], tangoPose.rotation[3]);
+        return mQuat.getPitch();
+    }
+
+    public double getYawfromQuaternion(TangoPoseData tangoPose){
+        Quaternion mQuat = new Quaternion
+                (tangoPose.rotation[0], tangoPose.rotation[1], tangoPose.rotation[2], tangoPose.rotation[3]);
+        return mQuat.getYaw();
+    }
+
+    public double getRollfromQuaternion(TangoPoseData tangoPose){
+        Quaternion mQuat = new Quaternion
+                (tangoPose.rotation[0], tangoPose.rotation[1], tangoPose.rotation[2], tangoPose.rotation[3]);
+        return mQuat.getRoll();
     }
 }

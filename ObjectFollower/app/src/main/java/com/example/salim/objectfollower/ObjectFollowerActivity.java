@@ -73,9 +73,6 @@ import com.projecttango.tangosupport.TangoSupport;
 public class ObjectFollowerActivity extends Activity implements View.OnTouchListener {
     private static final String TAG = ObjectFollowerActivity.class.getSimpleName();
     private static final int INVALID_TEXTURE_ID = 0;
-    public static final int INDEX_PITCH = 0;
-    public static final int INDEX_YAW = 1;
-    public static final int INDEX_ROLL = 2;
 
     private RajawaliSurfaceView mSurfaceView;
     private ObjectFollowerRenderer mRenderer;
@@ -106,7 +103,6 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
         mSurfaceView.setSurfaceRenderer(mRenderer);
         mSurfaceView.setOnTouchListener(this);
         mPointCloudManager = new TangoPointCloudManager();
-        mMovementExtrinisics = new MovementExtrinsics();
         setContentView(mSurfaceView);
     }
 
@@ -180,9 +176,13 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
             @Override
             public void onPoseAvailable(TangoPoseData pose) {
                 if(objectPlaced.get()){
-                    mRenderer.moveSphere(pose);
-                    Quaternion myQ = new Quaternion(pose.rotation[0], pose.rotation[1], pose.rotation[2], pose.rotation[3]);
-                    System.out.println(myQ.getYaw() * (180 / Math.PI)); //TODO WORKING HERE
+                    System.out.println(mRenderer.getObjectPose());
+                        if (!mMovementExtrinisics.calculateOnScreen(pose, mRenderer.getObjectPose())) {
+                            //System.out.println("Here");
+                            mRenderer.moveSphere(pose);
+                        }
+                    //Quaternion myQ = new Quaternion(pose.rotation[0], pose.rotation[1], pose.rotation[2], pose.rotation[3]);
+                    //System.out.println(-1 * myQ.getYaw() * (180 / Math.PI)); //TODO WORKING HERE
                 }
             }
 
@@ -213,6 +213,10 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
         // to be done after connecting Tango and listeners.
         mExtrinsics = setupExtrinsics(mTango);
         mIntrinsics = mTango.getCameraIntrinsics(TangoCameraIntrinsics.TANGO_CAMERA_COLOR);
+        mMovementExtrinisics = new MovementExtrinsics(
+                Math.toDegrees(2 * Math.atan(0.5 * mIntrinsics.width / mIntrinsics.fx)),
+                Math.toDegrees(2 * Math.atan(0.5 * mIntrinsics.height / mIntrinsics.fy))
+        );
     }
 
     /**
@@ -380,28 +384,5 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
                 mTango.getPoseAtTime(rgbTimestamp, FRAME_PAIR));
     }
 
-    public double[] getEulerAnglesfromQuaternion(TangoPoseData tangoPose){
-        Quaternion mQuat = new Quaternion
-                (tangoPose.rotation[0], tangoPose.rotation[1], tangoPose.rotation[2], tangoPose.rotation[3]);
-        double[] EuelerAngles = {mQuat.getPitch(), mQuat.getYaw(), mQuat.getRoll()};
-        return EuelerAngles;
-    }
 
-    public double getPitchfromQuaternion(TangoPoseData tangoPose){
-        Quaternion mQuat = new Quaternion
-                (tangoPose.rotation[0], tangoPose.rotation[1], tangoPose.rotation[2], tangoPose.rotation[3]);
-        return mQuat.getPitch();
-    }
-
-    public double getYawfromQuaternion(TangoPoseData tangoPose){
-        Quaternion mQuat = new Quaternion
-                (tangoPose.rotation[0], tangoPose.rotation[1], tangoPose.rotation[2], tangoPose.rotation[3]);
-        return mQuat.getYaw();
-    }
-
-    public double getRollfromQuaternion(TangoPoseData tangoPose){
-        Quaternion mQuat = new Quaternion
-                (tangoPose.rotation[0], tangoPose.rotation[1], tangoPose.rotation[2], tangoPose.rotation[3]);
-        return mQuat.getRoll();
-    }
 }

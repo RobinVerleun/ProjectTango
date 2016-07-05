@@ -54,8 +54,8 @@ import com.projecttango.tangosupport.TangoSupport;
  */
 public class ObjectFollowerRenderer extends RajawaliRenderer {
     private static final String TAG = ObjectFollowerRenderer.class.getSimpleName();
-    private static final float OBJECT_SPEED = 0.007f;
-    private static final float OBJECT_THRESHOLD = 0.15f;
+    private static final float OBJECT_SPEED = 0.004f;
+    private static final float OBJECT_THRESHOLD = 0.0f;
 
 
     // Augmented Reality related fields
@@ -255,5 +255,9 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
 
     public void setDevicePose(TangoPoseData mDevicePose) {
         this.mDevicePose = mDevicePose;
+    }
+
+    public Vector3 getObjectPose() {
+        return mObject.getPosition();
     }
 }

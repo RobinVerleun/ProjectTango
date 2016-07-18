@@ -37,64 +37,88 @@ public class MovementExtrinsics {
     }
 
     public boolean calculateOnScreen(TangoPoseData tPose, Vector3 objLocation){
-        /*
-         Get coordinates of tango and object. Note: Vector3 takes coordinates as X,Y,Z and accesses
-         them as such. TangoPose provides coordinates as an X,Z,Y system and must be entered slightly differently.
-         */
+        //Get coordinates of tango and object. Note: Vector3 takes coordinates as X,Y,Z and accesses
+        //them as such. TangoPose provides coordinates as an X,Z,Y system and must be entered slightly differently.
         Vector3 tangoLocation = new Vector3(tPose.translation[0], tPose.translation[2], tPose.translation[1]);
 
-        /*
-         Calculate Vector between tango and object
-         */
-        Vector3 V_ObjTango = new Vector3(objLocation.x - tangoLocation.x, objLocation.y - tangoLocation.y, objLocation.z - (-1) * tangoLocation.z);
+        //Calculate Vector between tango and object
+        Vector3 V_ObjTango = new Vector3(objLocation.x - tangoLocation.x, objLocation.y - tangoLocation.y, (-1) * objLocation.z - tangoLocation.z);
         //System.out.println("ObjVector X: " + V_ObjTango.x + ",  ObjVector Y: " + V_ObjTango.y + ",  ObjVector Z: " + V_ObjTango.z);
-        /*
-         Get the value of the angles using the sin formula for horizontal and vertical planes.
-        Angle between object and tango on the xz-plane, with respect to the z-axis
-         */
+
+        //Get the value of the angles using the sin formula for horizontal and vertical planes.
+        //Angle between object and tango on the xz-plane, with respect to the z-axis
         double m_XZAngle = getHorizontalAngleBetweenObjects(V_ObjTango);
 
         //Angle between object and tango on the xy-plane, with respect to the y-axis
-        //TODO: Calculate vertical angle
+        double m_XYAngle = getVerticalAngleBetweenObjects(V_ObjTango);
 
-        //Determine where the screen is currently looking
-        double cameraAngle = getYawfromTangoPose(tPose);
-        if(cameraAngle < 0){
-            cameraAngle = 180 + (cameraAngle + 180);
+        //Determine where the screen is currently looking - we flip the vertical angle to ease calculations later.
+        double HorizontalCameraAngle = getYawfromTangoPose(tPose);
+        double VerticalCameraAngle = 180 - getRollfromTangoPose(tPose);
+        if(HorizontalCameraAngle < 0){
+            HorizontalCameraAngle = 180 + (HorizontalCameraAngle + 180);
         }
-        double leftLimit = (cameraAngle + mHorizontalFOV/2) % 360;
-        double rightLimit = (cameraAngle - mHorizontalFOV/2) % 360;
 
-        if(leftLimit > mHorizontalFOV){
-            if(leftLimit > m_XZAngle && rightLimit < m_XZAngle){
+        double leftLimit = (HorizontalCameraAngle + mHorizontalFOV/2) % 360;
+        double rightLimit = (HorizontalCameraAngle - mHorizontalFOV/2) % 360;
+        if(rightLimit < 0){
+            rightLimit = 360 + rightLimit;
+        }
+        double lowerLimit = (VerticalCameraAngle - mVerticalFOV) % 360;
+        double upperLimit = (VerticalCameraAngle + mVerticalFOV) % 360;
+
+        //System.out.println("Left: " + leftLimit + ", Mine: " + m_XZAngle + ", Right: " + rightLimit);
+        //Calculate if the sphere is on the screen vertically
+        if(lowerLimit < m_XYAngle && upperLimit > m_XYAngle) {
+            if (leftLimit > mHorizontalFOV) {
+                if (leftLimit > m_XZAngle && rightLimit < m_XZAngle) {
+                    return true;
+                }
+            } else if (leftLimit - m_XZAngle > 0) {
+                return true;
+            } else if (m_XZAngle > rightLimit) {
                 return true;
             }
-        } else if(leftLimit - m_XZAngle > 0){
-            return true;
-        } else if(m_XZAngle > rightLimit){
-            return true;
         }
         return false;
     }
 
+    public double getVerticalAngleBetweenObjects(Vector3 m3DVector){
+        Vector3 yUnit = new Vector3(0,-1,0);
+        return yUnit.angle(m3DVector);
+    }
+
     public double getHorizontalAngleBetweenObjects(Vector3 m3DVector){
-        Vector2 yUnit = new Vector2(0,1);
+        Vector3 zUnit = new Vector3(0,1,0);
+        Vector3 mXZVector = new Vector3(m3DVector.x, m3DVector.z, 0);
+        if(m3DVector.x >= 0){
+            return  360 - zUnit.angle(mXZVector);
+        } else {
+            return zUnit.angle(mXZVector);
+        }
+    }
+
+    //TODO: REMOVE - DEPRECATED METHOD
+    /*
+    public double getHorizontalAngleBetweenObjects(Vector3 m3DVector){
+        Vector2 zUnit = new Vector2(0,1);
         Vector2 m2DVector = new Vector2(m3DVector.x, m3DVector.z);
 
-        double dotResult = ( (yUnit.getX() * m2DVector.getX()) + (yUnit.getY() * m2DVector.getY()) );
+        double dotResult = ( (zUnit.getX() * m2DVector.getX()) + (zUnit.getY() * m2DVector.getY()) );
         double magnitudeResult =
-                (Math.sqrt(Math.pow(yUnit.getX(),2) + Math.pow(yUnit.getY(),2))) *
+                (Math.sqrt(Math.pow(zUnit.getX(),2) + Math.pow(zUnit.getY(),2))) *
                         (Math.sqrt(Math.pow(m2DVector.getX(), 2) + Math.pow(m2DVector.getY(),2)));
 
         double mAngle = Math.toDegrees(Math.acos(dotResult/magnitudeResult));
 
         //Check to see if the angle of the vectors is in the right coordinate and convert.
-        if(m3DVector.x > 0){
+        if(m3DVector.x >= 0){
             mAngle = 360 - mAngle;
         }
         //System.out.println(mAngle);
         return mAngle;
     }
+    */
 
     public double[] getEulerAnglesfromTangoPose(TangoPoseData tangoPose){
         Quaternion mQuat = new Quaternion

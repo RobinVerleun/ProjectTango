@@ -176,13 +176,9 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
             @Override
             public void onPoseAvailable(TangoPoseData pose) {
                 if(objectPlaced.get()){
-                    System.out.println(mRenderer.getObjectPose());
                         if (!mMovementExtrinisics.calculateOnScreen(pose, mRenderer.getObjectPose())) {
-                            //System.out.println("Here");
                             mRenderer.moveSphere(pose);
                         }
-                    //Quaternion myQ = new Quaternion(pose.rotation[0], pose.rotation[1], pose.rotation[2], pose.rotation[3]);
-                    //System.out.println(-1 * myQ.getYaw() * (180 / Math.PI)); //TODO WORKING HERE
                 }
             }
 

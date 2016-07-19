@@ -35,7 +35,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
-import org.rajawali3d.math.Quaternion;
 import org.rajawali3d.math.vector.Vector3;
 import org.rajawali3d.scene.ASceneFrameCallback;
 import org.rajawali3d.surface.RajawaliSurfaceView;
@@ -79,7 +78,6 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
     private TangoCameraIntrinsics mIntrinsics;
     private DeviceExtrinsics mExtrinsics;
     private TangoPointCloudManager mPointCloudManager;
-    private MovementExtrinsics mMovementExtrinisics;
     private Tango mTango;
     private boolean mIsConnected = false;
     private double mCameraPoseTimestamp = 0;
@@ -176,9 +174,9 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
             @Override
             public void onPoseAvailable(TangoPoseData pose) {
                 if(objectPlaced.get()){
-                        if (!mMovementExtrinisics.calculateOnScreen(pose, mRenderer.getObjectPose())) {
-                            mRenderer.moveSphere(pose);
-                        }
+                    if (!MovementExtrinsics.getInstance().calculateOnScreen(pose, mRenderer.getObjectPose())) {
+                        mRenderer.moveSphere(pose);
+                    }
                 }
             }
 
@@ -209,7 +207,7 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
         // to be done after connecting Tango and listeners.
         mExtrinsics = setupExtrinsics(mTango);
         mIntrinsics = mTango.getCameraIntrinsics(TangoCameraIntrinsics.TANGO_CAMERA_COLOR);
-        mMovementExtrinisics = new MovementExtrinsics(
+        MovementExtrinsics.getInstance().set_FOV(
                 Math.toDegrees(2 * Math.atan(0.5 * mIntrinsics.width / mIntrinsics.fx)),
                 Math.toDegrees(2 * Math.atan(0.5 * mIntrinsics.height / mIntrinsics.fy))
         );

@@ -54,15 +54,13 @@ import com.projecttango.tangosupport.TangoSupport;
  */
 public class ObjectFollowerRenderer extends RajawaliRenderer {
     private static final String TAG = ObjectFollowerRenderer.class.getSimpleName();
-    private static final float OBJECT_SPEED = 0.004f;
-    private static final float OBJECT_THRESHOLD = 0.0f;
-
 
     // Augmented Reality related fields
     private ATexture mTangoCameraTexture;
     private boolean mSceneCameraConfigured;
 
     private Object3D mObject;
+
     private Pose mObjectPose;
     private boolean mObjectPoseUpdated = false;
 
@@ -112,10 +110,10 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
         material.enableLighting(true);
         material.setDiffuseMethod(new DiffuseMethod.Lambert());
 
-        // Build a Cube and place it initially in the origin.
+        // Build Sphere1 and place it initially in the origin.
         mObject = new Sphere(0.075f,24,24);
         mObject.setMaterial(material);
-        mObject.setPosition(0, 0, -3);
+        mObject.setPosition(0, 0, 0);
         mObject.setRotation(Vector3.Axis.Z, 180);
         getCurrentScene().addChild(mObject);
     }
@@ -131,10 +129,7 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
                 mObject.setOrientation(mObjectPose.getOrientation());
                 mObjectPoseUpdated = false;
             }
-
         }
-
-
         super.onRender(elapsedRealTime, deltaTime);
     }
 
@@ -145,12 +140,11 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
     public synchronized void updateObjectPose(Vector3 onTouchPose) {
         mObjectPose = new Pose(onTouchPose, new Quaternion(0.0, 0.0, 0.0, 0.0));
         mObjectPoseUpdated = true;
-
     }
 
     public synchronized void moveSphere(TangoPoseData currentPose){
-        Vector3 coordinates = calculateTravel(currentPose);
 
+        Vector3 coordinates = MovementExtrinsics.getInstance().calculateTravel(currentPose, mObject.getPosition());
         mObject.moveForward(coordinates.z);
         mObject.moveRight(coordinates.x);
         mObject.moveUp(coordinates.y);
@@ -208,41 +202,6 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
                                  float xOffsetStep, float yOffsetStep,
                                  int xPixelOffset, int yPixelOffset) {
     }
-
-    /*
-     * Method to calculate the amount the sphere should move when following the tango device.
-     */
-    private Vector3 calculateTravel(TangoPoseData mDevicePose){
-        float dampening_Factor = OBJECT_THRESHOLD * OBJECT_SPEED;
-        double ResultX, ResultY, ResultZ;
-
-        Vector3 ObjCoord = mObject.getPosition();
-
-        if(Math.abs((mDevicePose.translation[0] - ObjCoord.x) * (OBJECT_SPEED)) > dampening_Factor) {
-            ResultX = ((mDevicePose.translation[0] - ObjCoord.x) * (OBJECT_SPEED)); //Horizontal Movement
-        } else { ResultX = 0; }
-        if(Math.abs((mDevicePose.translation[1] - ObjCoord.z) * (OBJECT_SPEED)) > dampening_Factor) {
-            ResultY = ((-1 * mDevicePose.translation[1] - ObjCoord.z) * (OBJECT_SPEED)); //Forward back Movement; Note: Tango Z-axis is negative of object Z-axis
-        } else { ResultY = 0; }
-        if(Math.abs((mDevicePose.translation[2] - ObjCoord.y) * (OBJECT_SPEED)) > dampening_Factor) {
-            ResultZ = ((mDevicePose.translation[2] - ObjCoord.y) * (OBJECT_SPEED)); //Vertical Movement
-        } else { ResultZ = 0; }
-
-        return new Vector3(ResultX, ResultZ, ResultY);
-    }
-
-    /*
-    private boolean isLookingAtObject(Object3D object, TangoPoseData poseData) {
-
-        Vector3 v = new Vector3(poseData.translation[0], poseData.translation[1], poseData.translation[3]);
-        v.multiply(object.getModelViewMatrix());
-
-        float pitch = (float) Math.atan2(v.y, -v.z);
-        float yaw = (float) Math.atan2(v.x, -v.z);
-
-        return (Math.abs(pitch) < ccIntrinsics.height) && (Math.abs(yaw) < ccIntrinsics.width);
-    }
-    */
 
     @Override
     public void onTouchEvent(MotionEvent event) {

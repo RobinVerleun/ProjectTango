@@ -22,9 +22,12 @@ public final class MovementExtrinsics {
     public static final int INDEX_YAW = 1;
     public static final int INDEX_ROLL = 2;
     private static final float OBJECT_SPEED = 0.004f;
-    private static final float OBJECT_THRESHOLD = 0.0f;
+    private static final float OBJECT_THRESHOLD = 0.15f;
 
     private double mHorizontalFOV, mVerticalFOV;
+    private double VerticalCameraAngle, HorizontalCameraAngle;
+
+    private boolean firstPass = true;
 
     private MovementExtrinsics(){
         if(INSTANCE != null){
@@ -75,10 +78,16 @@ public final class MovementExtrinsics {
         double m_XYAngle = getVerticalAngleBetweenObjects(V_ObjTango);
 
         //Determine where the screen is currently looking - we flip the vertical angle to ease calculations later.
-        double HorizontalCameraAngle = getYawfromTangoPose(tPose);
-        double VerticalCameraAngle = 180 - getRollfromTangoPose(tPose);
+        HorizontalCameraAngle = getYawfromTangoPose(tPose);
         if(HorizontalCameraAngle < 0){
             HorizontalCameraAngle = 180 + (HorizontalCameraAngle + 180);
+        }
+
+        if(firstPass){
+            VerticalCameraAngle = 180 - getRollfromTangoPose(tPose);
+            firstPass = false;
+        } else if(Math.abs(VerticalCameraAngle - (180 - getRollfromTangoPose(tPose))) / VerticalCameraAngle < 0.1){
+            VerticalCameraAngle = 180 - getRollfromTangoPose(tPose);
         }
 
         double leftLimit = (HorizontalCameraAngle + mHorizontalFOV/2) % 360;
@@ -86,10 +95,11 @@ public final class MovementExtrinsics {
         if(rightLimit < 0){
             rightLimit = 360 + rightLimit;
         }
-        double lowerLimit = (VerticalCameraAngle - mVerticalFOV) % 360;
+
+        double lowerLimit = (VerticalCameraAngle - mVerticalFOV/2) % 360;
         double upperLimit = (VerticalCameraAngle + mVerticalFOV) % 360;
 
-        //System.out.println("Left: " + leftLimit + ", Mine: " + m_XZAngle + ", Right: " + rightLimit);
+        System.out.println("Lower: " + lowerLimit + ", Mine: " + m_XYAngle + ", Upper: " + upperLimit);
         //Calculate if the sphere is on the screen vertically
         if(lowerLimit < m_XYAngle && upperLimit > m_XYAngle) {
             if (leftLimit > mHorizontalFOV) {

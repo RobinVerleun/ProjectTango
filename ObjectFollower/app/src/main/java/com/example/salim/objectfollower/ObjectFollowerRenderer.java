@@ -127,11 +127,13 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
         mObjects.get(0).setRotation(Vector3.Axis.Z,180);
         getCurrentScene().addChild(mObjects.get(0));
 
+
         mObjects.add(new Sphere(0.075f,24,24));
         mObjects.get(1).setMaterial(material);
         mObjects.get(1).setPosition(-1,0,-3);
         mObjects.get(1).setRotation(Vector3.Axis.Z, 180);
         getCurrentScene().addChild(mObjects.get(1));
+
     }
 
     @Override

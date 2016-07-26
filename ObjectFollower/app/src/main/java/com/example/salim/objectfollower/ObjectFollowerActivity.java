@@ -174,8 +174,10 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
             @Override
             public void onPoseAvailable(TangoPoseData pose) {
                 if(objectPlaced.get()){
-                    if (!MovementExtrinsics.getInstance().calculateOnScreen(pose, mRenderer.getObjectPose())) {
-                        mRenderer.moveSphere(pose);
+                    for(int i = 0; i < mRenderer.getNumberofObjects(); ++i){
+                        if (!MovementExtrinsics.getInstance().calculateOnScreen(pose, mRenderer.getObjectPose(i))) {
+                            mRenderer.moveSphere(pose, i);
+                        }
                     }
                 }
             }

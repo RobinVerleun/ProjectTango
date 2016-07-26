@@ -162,14 +162,13 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
         mObjectPoseUpdated = true;
     }
 
-    public synchronized void moveSphere(TangoPoseData currentPose){
+    public synchronized void moveSphere(TangoPoseData currentPose, int index){
 
-        for(int i = 0; i < mObjects.size(); ++i) {
-            Vector3 coordinates = MovementExtrinsics.getInstance().calculateTravel(currentPose, mObjects.get(i).getPosition());
-            mObjects.get(i).moveForward(coordinates.z);
-            mObjects.get(i).moveRight(coordinates.x);
-            mObjects.get(i).moveUp(coordinates.y);
-        }
+        Vector3 coordinates = MovementExtrinsics.getInstance().calculateTravel(currentPose, mObjects.get(index).getPosition());
+        mObjects.get(index).moveForward(coordinates.z);
+        mObjects.get(index).moveRight(coordinates.x);
+        mObjects.get(index).moveUp(coordinates.y);
+
     }
 
     /**
@@ -238,7 +237,11 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
         this.mDevicePose = mDevicePose;
     }
 
-    //public Vector3 getObjectPose() {
-    //    return mObject.getPosition();
-    //}
+    public Vector3 getObjectPose(int index) {
+        return mObjects.get(index).getPosition();
+    }
+
+    public int getNumberofObjects(){
+        return mObjects.size();
+    }
 }

@@ -47,6 +47,9 @@ import com.projecttango.rajawali.Pose;
 import com.projecttango.rajawali.ScenePoseCalculator;
 import com.projecttango.tangosupport.TangoSupport;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 /**
  * Very simple example augmented reality renderer which displays a cube fixed in place.
  * The position of the cube in the OpenGL world is updated using the {@code updateObjectPose}
@@ -59,11 +62,11 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
     private ATexture mTangoCameraTexture;
     private boolean mSceneCameraConfigured;
 
-    private Object3D mObject;
-
+    //private Object3D mObject;
     private Pose mObjectPose;
+    private ArrayList<Object3D> mObjects = new ArrayList<Object3D>();
+    
     private boolean mObjectPoseUpdated = false;
-
     private TangoPoseData mDevicePose;
 
     public ObjectFollowerRenderer(Context context) {
@@ -111,11 +114,24 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
         material.setDiffuseMethod(new DiffuseMethod.Lambert());
 
         // Build Sphere1 and place it initially in the origin.
+        /*
         mObject = new Sphere(0.075f,24,24);
         mObject.setMaterial(material);
         mObject.setPosition(0, 0, 0);
         mObject.setRotation(Vector3.Axis.Z, 180);
         getCurrentScene().addChild(mObject);
+        */
+        mObjects.add(new Sphere(0.075f,24,24));
+        mObjects.get(0).setMaterial(material);
+        mObjects.get(0).setPosition(1,0,-3);
+        mObjects.get(0).setRotation(Vector3.Axis.Z,180);
+        getCurrentScene().addChild(mObjects.get(0));
+
+        mObjects.add(new Sphere(0.075f,24,24));
+        mObjects.get(1).setMaterial(material);
+        mObjects.get(1).setPosition(-1,0,-3);
+        mObjects.get(1).setRotation(Vector3.Axis.Z, 180);
+        getCurrentScene().addChild(mObjects.get(1));
     }
 
     @Override
@@ -124,9 +140,13 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
         // Synchronize against concurrent access with the setter below.
         synchronized (this) {
             if (mObjectPoseUpdated) {
-                // Place the 3D object in the location of the detected plane.
-                mObject.setPosition(mObjectPose.getPosition());
-                mObject.setOrientation(mObjectPose.getOrientation());
+                // Place the 3D object in the location of the detected point.
+                mObjects.get(0).setPosition(mObjectPose.getPosition().add(-1,0,0));
+                mObjects.get(0).setOrientation(mObjectPose.getOrientation());
+
+                mObjects.get(1).setPosition(mObjectPose.getPosition().add(1,0,0));
+                mObjects.get(1).setOrientation(mObjectPose.getOrientation());
+
                 mObjectPoseUpdated = false;
             }
         }
@@ -144,10 +164,12 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
 
     public synchronized void moveSphere(TangoPoseData currentPose){
 
-        Vector3 coordinates = MovementExtrinsics.getInstance().calculateTravel(currentPose, mObject.getPosition());
-        mObject.moveForward(coordinates.z);
-        mObject.moveRight(coordinates.x);
-        mObject.moveUp(coordinates.y);
+        for(int i = 0; i < mObjects.size(); ++i) {
+            Vector3 coordinates = MovementExtrinsics.getInstance().calculateTravel(currentPose, mObjects.get(i).getPosition());
+            mObjects.get(i).moveForward(coordinates.z);
+            mObjects.get(i).moveRight(coordinates.x);
+            mObjects.get(i).moveUp(coordinates.y);
+        }
     }
 
     /**
@@ -216,7 +238,7 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
         this.mDevicePose = mDevicePose;
     }
 
-    public Vector3 getObjectPose() {
-        return mObject.getPosition();
-    }
+    //public Vector3 getObjectPose() {
+    //    return mObject.getPosition();
+    //}
 }

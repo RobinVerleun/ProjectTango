@@ -325,7 +325,7 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
                 }
 
                 if (rgbPoint != null) {
-                    // Update the position of the rendered cube to the pose of the detected plane
+                    // Update the position of the rendered sphere to the pose of the detected point
                     // This update is made thread safe by the renderer
                     mRenderer.updateObjectPose(rgbPoint);
                     objectPlaced.set(true);

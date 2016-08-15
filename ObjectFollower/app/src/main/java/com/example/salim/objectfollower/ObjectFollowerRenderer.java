@@ -112,25 +112,17 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
         material.setColorInfluence(0.1f);
         material.enableLighting(true);
         material.setDiffuseMethod(new DiffuseMethod.Lambert());
-
-        // Build Sphere1 and place it initially in the origin.
-        /*
-        mObject = new Sphere(0.075f,24,24);
-        mObject.setMaterial(material);
-        mObject.setPosition(0, 0, 0);
-        mObject.setRotation(Vector3.Axis.Z, 180);
-        getCurrentScene().addChild(mObject);
-        */
+        
         mObjects.add(new Sphere(0.075f,24,24));
         mObjects.get(0).setMaterial(material);
-        mObjects.get(0).setPosition(1,0,-3);
+        mObjects.get(0).setPosition(0.5,0,-3);
         mObjects.get(0).setRotation(Vector3.Axis.Z,180);
         getCurrentScene().addChild(mObjects.get(0));
 
 
         mObjects.add(new Sphere(0.075f,24,24));
         mObjects.get(1).setMaterial(material);
-        mObjects.get(1).setPosition(-1,0,-3);
+        mObjects.get(1).setPosition(-0.5,0,-3);
         mObjects.get(1).setRotation(Vector3.Axis.Z, 180);
         getCurrentScene().addChild(mObjects.get(1));
 
@@ -143,10 +135,10 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
         synchronized (this) {
             if (mObjectPoseUpdated) {
                 // Place the 3D object in the location of the detected point.
-                mObjects.get(0).setPosition(mObjectPose.getPosition().add(-1,0,0));
+                mObjects.get(0).setPosition(mObjectPose.getPosition().add(-0.5,-0.25,0));
                 mObjects.get(0).setOrientation(mObjectPose.getOrientation());
 
-                mObjects.get(1).setPosition(mObjectPose.getPosition().add(1,0,0));
+                mObjects.get(1).setPosition(mObjectPose.getPosition().add(0.5,0.25,0));
                 mObjects.get(1).setOrientation(mObjectPose.getOrientation());
 
                 mObjectPoseUpdated = false;

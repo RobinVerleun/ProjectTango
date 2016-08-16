@@ -65,6 +65,7 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
     private boolean mObjectPoseUpdated = false;
 
     private TangoPoseData mDevicePose;
+    private boolean gameOver = false;
 
     public ObjectFollowerRenderer(Context context) {
         super(context);
@@ -145,6 +146,9 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
     public synchronized void moveSphere(TangoPoseData currentPose){
 
         Vector3 coordinates = MovementExtrinsics.getInstance().calculateTravel(currentPose, mObject.getPosition());
+        if(coordinates.x == 0 || coordinates.y == 0 || coordinates.z == 0){
+            gameOver = true;
+        }
         mObject.moveForward(coordinates.z);
         mObject.moveRight(coordinates.x);
         mObject.moveUp(coordinates.y);
@@ -218,5 +222,13 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
 
     public Vector3 getObjectPose() {
         return mObject.getPosition();
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
+    public void setGameOver(boolean gameOver) {
+        this.gameOver = gameOver;
     }
 }

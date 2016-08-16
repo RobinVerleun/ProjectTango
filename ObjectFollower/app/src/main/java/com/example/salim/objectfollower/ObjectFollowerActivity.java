@@ -29,10 +29,12 @@ import com.google.atap.tangoservice.TangoPoseData;
 import com.google.atap.tangoservice.TangoXyzIjData;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.rajawali3d.math.vector.Vector3;
@@ -71,6 +73,7 @@ import com.projecttango.tangosupport.TangoSupport;
  */
 public class ObjectFollowerActivity extends Activity implements View.OnTouchListener {
     private static final String TAG = ObjectFollowerActivity.class.getSimpleName();
+    public static final String MESSAGE = "com.example.salim.objectfollower.MESSAGE";
     private static final int INVALID_TEXTURE_ID = 0;
 
     private RajawaliSurfaceView mSurfaceView;
@@ -81,6 +84,10 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
     private Tango mTango;
     private boolean mIsConnected = false;
     private double mCameraPoseTimestamp = 0;
+    private long timeStart;
+    private long timeCurrent;
+    private double timeElapsed;
+    private TextView scoreView;
 
     // Texture rendering related fields
     // NOTE: Naming indicates which thread is in charge of updating this variable
@@ -102,6 +109,7 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
         mSurfaceView.setOnTouchListener(this);
         mPointCloudManager = new TangoPointCloudManager();
         setContentView(mSurfaceView);
+        scoreView = (TextView) findViewById(R.id.scoreView);
     }
 
     @Override
@@ -147,6 +155,14 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
                     }
                 }
             });
+            if(objectPlaced.get() == true){
+                timeCurrent = System.currentTimeMillis();
+                timeElapsed = (timeCurrent - timeStart)/1000;
+                scoreView.setText(Double.toString(timeElapsed));
+            }
+            if(mRenderer.isGameOver() == true){
+                endGame();
+            }
         }
     }
 
@@ -329,6 +345,7 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
                     // This update is made thread safe by the renderer
                     mRenderer.updateObjectPose(rgbPoint);
                     objectPlaced.set(true);
+                    timeStart = System.currentTimeMillis();
                 }
 
             } catch (TangoException t) {
@@ -378,5 +395,10 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
                 mTango.getPoseAtTime(rgbTimestamp, FRAME_PAIR));
     }
 
-
+    private void endGame(){
+        Intent intent = new Intent(this, GameOverActivity.class);
+        String score = scoreView.toString();
+        intent.putExtra(MESSAGE, score);
+        startActivity(intent);
+    }
 }

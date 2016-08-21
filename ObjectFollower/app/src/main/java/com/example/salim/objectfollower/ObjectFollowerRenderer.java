@@ -47,6 +47,8 @@ import com.projecttango.rajawali.Pose;
 import com.projecttango.rajawali.ScenePoseCalculator;
 import com.projecttango.tangosupport.TangoSupport;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * Very simple example augmented reality renderer which displays a cube fixed in place.
  * The position of the cube in the OpenGL world is updated using the {@code updateObjectPose}
@@ -65,7 +67,7 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
     private boolean mObjectPoseUpdated = false;
 
     private TangoPoseData mDevicePose;
-    private boolean gameOver = false;
+    private AtomicBoolean gameOver = new AtomicBoolean(false);
 
     public ObjectFollowerRenderer(Context context) {
         super(context);
@@ -147,7 +149,7 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
 
         Vector3 coordinates = MovementExtrinsics.getInstance().calculateTravel(currentPose, mObject.getPosition());
         if(coordinates.x == 0 || coordinates.y == 0 || coordinates.z == 0){
-            gameOver = true;
+            gameOver.set(true);
         }
         mObject.moveForward(coordinates.z);
         mObject.moveRight(coordinates.x);
@@ -224,11 +226,11 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
         return mObject.getPosition();
     }
 
-    public boolean isGameOver() {
+    public AtomicBoolean getGameOver() {
         return gameOver;
     }
 
     public void setGameOver(boolean gameOver) {
-        this.gameOver = gameOver;
+        this.gameOver.set(gameOver);
     }
 }

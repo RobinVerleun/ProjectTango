@@ -135,6 +135,7 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
         super.onResume();
         // Synchronize against disconnecting while the service is being used in the OpenGL thread or
         // in the UI thread.
+        Log.v(TAG, "in on resume");
         if (!mIsConnected) {
             // Initialize Tango Service as a normal Android Service, since we call 
             // mTango.disconnect() in onPause, this will unbind Tango Service, so
@@ -155,12 +156,17 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
                     }
                 }
             });
-            if(objectPlaced.get() == true){
+        } else {
+            Log.v(TAG, "using log in the if statement");
+            System.out.println("USing println inside the if statement");
+            if(objectPlaced.get()){
                 timeCurrent = System.currentTimeMillis();
                 timeElapsed = (timeCurrent - timeStart)/1000;
                 scoreView.setText(Double.toString(timeElapsed));
+                Log.v(TAG,Double.toString(timeElapsed));
             }
-            if(mRenderer.isGameOver() == true){
+            Log.d(TAG,String.valueOf(mRenderer.getGameOver().get()));
+            if(mRenderer.getGameOver().get()){
                 endGame();
             }
         }

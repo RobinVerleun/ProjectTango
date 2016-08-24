@@ -31,9 +31,11 @@ import com.google.atap.tangoservice.TangoXyzIjData;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -103,13 +105,15 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mSurfaceView = new RajawaliSurfaceView(this);
+        setContentView(R.layout.activity_object_follower);
+
+        scoreView = (TextView) findViewById(R.id.scoreView);
+        mSurfaceView = (RajawaliSurfaceView) findViewById(R.id.ar_view);
         mRenderer = new ObjectFollowerRenderer(this);
         mSurfaceView.setSurfaceRenderer(mRenderer);
+        mSurfaceView.setZOrderOnTop(false);
         mSurfaceView.setOnTouchListener(this);
         mPointCloudManager = new TangoPointCloudManager();
-        setContentView(mSurfaceView);
-        scoreView = (TextView) findViewById(R.id.scoreView);
     }
 
     @Override
@@ -156,19 +160,19 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
                     }
                 }
             });
-        } else {
-            Log.v(TAG, "using log in the if statement");
-            System.out.println("USing println inside the if statement");
-            if(objectPlaced.get()){
-                timeCurrent = System.currentTimeMillis();
-                timeElapsed = (timeCurrent - timeStart)/1000;
-                scoreView.setText(Double.toString(timeElapsed));
-                Log.v(TAG,Double.toString(timeElapsed));
-            }
-            Log.d(TAG,String.valueOf(mRenderer.getGameOver().get()));
-            if(mRenderer.getGameOver().get()){
-                endGame();
-            }
+        }
+        Log.v(TAG, "using log in the if statement");
+        System.out.println("USing println inside the if statement");
+        if(objectPlaced.get()){
+            timeCurrent = System.currentTimeMillis();
+            timeElapsed = (timeCurrent - timeStart)/1000;
+            scoreView.setText(Double.toString(timeElapsed));
+            Log.v(TAG,Double.toString(timeElapsed));
+        }
+        Log.d(TAG,String.valueOf(mRenderer.getGameOver().get()));
+        if(mRenderer.getGameOver().get()){
+            endGame();
+
         }
     }
 
@@ -351,7 +355,6 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
                     // This update is made thread safe by the renderer
                     mRenderer.updateObjectPose(rgbPoint);
                     objectPlaced.set(true);
-                    timeStart = System.currentTimeMillis();
                 }
 
             } catch (TangoException t) {
@@ -405,6 +408,131 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
         Intent intent = new Intent(this, GameOverActivity.class);
         String score = scoreView.toString();
         intent.putExtra(MESSAGE, score);
+        synchronized (this) {
+            if (mIsConnected) {
+                mRenderer.getCurrentScene().clearFrameCallbacks();
+                mTango.disconnectCamera(TangoCameraIntrinsics.TANGO_CAMERA_COLOR);
+                // We need to invalidate the connected texture ID so that we cause a re-connection
+                // in the OpenGL thread after resume
+                mConnectedTextureIdGlThread = INVALID_TEXTURE_ID;
+                mTango.disconnect();
+                mIsConnected = false;
+            }
+        }
         startActivity(intent);
+    }
+
+    private AttributeSet createAttributes(){
+        return new AttributeSet() {
+            @Override
+            public int getAttributeCount() {
+                return 0;
+            }
+
+            @Override
+            public String getAttributeName(int index) {
+                return null;
+            }
+
+            @Override
+            public String getAttributeValue(int index) {
+                return null;
+            }
+
+            @Override
+            public String getAttributeValue(String namespace, String name) {
+                return null;
+            }
+
+            @Override
+            public String getPositionDescription() {
+                return null;
+            }
+
+            @Override
+            public int getAttributeNameResource(int index) {
+                return 0;
+            }
+
+            @Override
+            public int getAttributeListValue(String namespace, String attribute, String[] options, int defaultValue) {
+                return 0;
+            }
+
+            @Override
+            public boolean getAttributeBooleanValue(String namespace, String attribute, boolean defaultValue) {
+                return false;
+            }
+
+            @Override
+            public int getAttributeResourceValue(String namespace, String attribute, int defaultValue) {
+                return 0;
+            }
+
+            @Override
+            public int getAttributeIntValue(String namespace, String attribute, int defaultValue) {
+                return 0;
+            }
+
+            @Override
+            public int getAttributeUnsignedIntValue(String namespace, String attribute, int defaultValue) {
+                return 0;
+            }
+
+            @Override
+            public float getAttributeFloatValue(String namespace, String attribute, float defaultValue) {
+                return 0;
+            }
+
+            @Override
+            public int getAttributeListValue(int index, String[] options, int defaultValue) {
+                return 0;
+            }
+
+            @Override
+            public boolean getAttributeBooleanValue(int index, boolean defaultValue) {
+                return false;
+            }
+
+            @Override
+            public int getAttributeResourceValue(int index, int defaultValue) {
+                return 0;
+            }
+
+            @Override
+            public int getAttributeIntValue(int index, int defaultValue) {
+                return 0;
+            }
+
+            @Override
+            public int getAttributeUnsignedIntValue(int index, int defaultValue) {
+                return 0;
+            }
+
+            @Override
+            public float getAttributeFloatValue(int index, float defaultValue) {
+                return 0;
+            }
+
+            @Override
+            public String getIdAttribute() {
+                return null;
+            }
+
+            @Override
+            public String getClassAttribute() {
+                return null;
+            }
+
+            @Override
+            public int getIdAttributeResourceValue(int defaultValue) {
+                return 0;
+            }
+
+            @Override
+            public int getStyleAttribute() {
+                return 0;
+            }
+        };
     }
 }

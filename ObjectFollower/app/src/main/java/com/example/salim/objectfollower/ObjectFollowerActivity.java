@@ -227,7 +227,7 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
                 Math.toDegrees(2 * Math.atan(0.5 * mIntrinsics.width / mIntrinsics.fx)),
                 Math.toDegrees(2 * Math.atan(0.5 * mIntrinsics.height / mIntrinsics.fy))
         );
-        runThread();
+        //runThread();
     }
 
     /**
@@ -347,7 +347,7 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
                     mRenderer.updateObjectPose(rgbPoint);
                     objectPlaced.set(true);
                     timeStart = System.currentTimeMillis();
-                    //runThread();
+                    runThread();
                 }
 
             } catch (TangoException t) {
@@ -399,7 +399,7 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
 
     private void endGame(){
         Intent intent = new Intent(this, GameOverActivity.class);
-        String score = scoreView.toString();
+        String score = String.format("%5.2f",timeElapsed);
         intent.putExtra(MESSAGE, score);
         /*
         synchronized (this) {
@@ -414,8 +414,10 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
             }
         }
         */
+        finish();
         startActivity(intent);
     }
+
 
     private void runThread() {
 

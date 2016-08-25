@@ -58,6 +58,14 @@ public final class MovementExtrinsics {
         return new Vector3(ResultX, ResultZ, ResultY);
     }
 
+    public Vector3 calculateDistance(TangoPoseData mDevicePose, Vector3 ObjCoord){
+        double ResultX, ResultY, ResultZ;
+            ResultX = ((mDevicePose.translation[0] - ObjCoord.x) * (OBJECT_SPEED)); //Horizontal Movement
+            ResultY = ((-1 * mDevicePose.translation[1] - ObjCoord.z) * (OBJECT_SPEED)); //Forward back Movement; Note: Tango Z-axis is negative of object Z-axis
+            ResultZ = ((mDevicePose.translation[2] - ObjCoord.y) * (OBJECT_SPEED)); //Vertical Movement
+        return new Vector3(ResultX, ResultZ, ResultY);
+    }
+
     public boolean calculateOnScreen(TangoPoseData tPose, Vector3 objLocation){
         //Get coordinates of tango and object. Note: Vector3 takes coordinates as X,Y,Z and accesses them as such. TangoPose provides coordinates as an X,Z,Y system and must be entered slightly differently.
         Vector3 tangoLocation = new Vector3(tPose.translation[0], tPose.translation[2], tPose.translation[1]);

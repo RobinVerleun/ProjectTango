@@ -148,7 +148,7 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
     public synchronized void moveSphere(TangoPoseData currentPose){
 
         Vector3 coordinates = MovementExtrinsics.getInstance().calculateTravel(currentPose, mObject.getPosition());
-        if(coordinates.length() <= 0.1){
+        if(MovementExtrinsics.getInstance().calculateDistance(currentPose, mObject.getPosition()).length() <= 0.5){
             synchronized (this) {
                 gameOver.set(true);
             }

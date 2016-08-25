@@ -335,6 +335,7 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
             try {
                 mRenderer.spawnObjects();
                 objectPlaced.set(true);
+
             } catch (TangoException t) {
                 Toast.makeText(getApplicationContext(),
                         R.string.failed_measurement,
@@ -384,11 +385,11 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
 
     private void endGame(){
         Intent intent = new Intent(this, GameOverActivity.class);
-        String score = scoreView.toString();
+        String score = String.format("%5.2f",timeElapsed);
         intent.putExtra(MESSAGE, score);
-
         startActivity(intent);
     }
+
 
     private void runThread() {
 

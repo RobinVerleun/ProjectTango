@@ -148,8 +148,10 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
     public synchronized void moveSphere(TangoPoseData currentPose){
 
         Vector3 coordinates = MovementExtrinsics.getInstance().calculateTravel(currentPose, mObject.getPosition());
-        if(coordinates.x == 0 || coordinates.y == 0 || coordinates.z == 0){
-            gameOver.set(true);
+        if(coordinates.length() <= 0.1){
+            synchronized (this) {
+                gameOver.set(true);
+            }
         }
         mObject.moveForward(coordinates.z);
         mObject.moveRight(coordinates.x);

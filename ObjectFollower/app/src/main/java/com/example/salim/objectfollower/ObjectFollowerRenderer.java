@@ -140,10 +140,10 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
                 double end = 2;
                 Random random = new Random();
                 // Place the 3D object in the location of the detected point.
-                mObjects.get(0).setPosition(start + (random.nextDouble() * (end - start)), start + (random.nextDouble() * (end - start)), start + (random.nextDouble() * (end - start)));
+                mObjects.get(0).setPosition(start + (random.nextDouble() * (end - start)), start + (random.nextDouble() * (end - start)), -2);
                 mObjects.get(0).setOrientation(new Quaternion(0, 0, 0, 0));
 
-                mObjects.get(1).setPosition(start + (random.nextDouble() * (end - start)), start + (random.nextDouble() * (end - start)), start + (random.nextDouble() * (end - start)));
+                mObjects.get(1).setPosition(start + (random.nextDouble() * (end - start)), start + (random.nextDouble() * (end - start)), -2);
                 mObjects.get(1).setOrientation(new Quaternion(0, 0, 0, 0));
 
                 mObjectPoseUpdated = false;

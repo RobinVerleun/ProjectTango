@@ -29,10 +29,14 @@ import com.google.atap.tangoservice.TangoPoseData;
 import com.google.atap.tangoservice.TangoXyzIjData;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.rajawali3d.math.vector.Vector3;
@@ -71,6 +75,7 @@ import com.projecttango.tangosupport.TangoSupport;
  */
 public class ObjectFollowerActivity extends Activity implements View.OnTouchListener {
     private static final String TAG = ObjectFollowerActivity.class.getSimpleName();
+    public static final String MESSAGE = "com.example.salim.objectfollower.MESSAGE";
     private static final int INVALID_TEXTURE_ID = 0;
 
     private RajawaliSurfaceView mSurfaceView;
@@ -81,6 +86,10 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
     private Tango mTango;
     private boolean mIsConnected = false;
     private double mCameraPoseTimestamp = 0;
+    private long timeStart;
+    private long timeCurrent;
+    private double timeElapsed;
+    private TextView scoreView;
 
     // Texture rendering related fields
     // NOTE: Naming indicates which thread is in charge of updating this variable
@@ -96,12 +105,15 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mSurfaceView = new RajawaliSurfaceView(this);
+        setContentView(R.layout.activity_object_follower);
+
+        scoreView = (TextView) findViewById(R.id.scoreView);
+        mSurfaceView = (RajawaliSurfaceView) findViewById(R.id.ar_view);
         mRenderer = new ObjectFollowerRenderer(this);
         mSurfaceView.setSurfaceRenderer(mRenderer);
+        mSurfaceView.setZOrderOnTop(false);
         mSurfaceView.setOnTouchListener(this);
         mPointCloudManager = new TangoPointCloudManager();
-        setContentView(mSurfaceView);
     }
 
     @Override
@@ -127,6 +139,7 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
         super.onResume();
         // Synchronize against disconnecting while the service is being used in the OpenGL thread or
         // in the UI thread.
+        Log.v(TAG, "in on resume");
         if (!mIsConnected) {
             // Initialize Tango Service as a normal Android Service, since we call 
             // mTango.disconnect() in onPause, this will unbind Tango Service, so
@@ -173,10 +186,14 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
         mTango.connectListener(framePairs, new OnTangoUpdateListener() {
             @Override
             public void onPoseAvailable(TangoPoseData pose) {
-                if(objectPlaced.get()){
-                    for(int i = 0; i < mRenderer.getNumberofObjects(); ++i){
-                        if (!MovementExtrinsics.getInstance().calculateOnScreen(pose, mRenderer.getObjectPose(i))) {
-                            mRenderer.moveSphere(pose, i);
+                if (objectPlaced.get()) {
+                    if (mRenderer.gameOver.get()) {
+                        endGame();
+                    } else {
+                        for (int i = 0; i < mRenderer.getNumberofObjects(); ++i) {
+                            if (!MovementExtrinsics.getInstance().calculateOnScreen(pose, mRenderer.getObjectPose(i))) {
+                                mRenderer.moveSphere(pose, i);
+                            }
                         }
                     }
                 }
@@ -214,6 +231,7 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
                 Math.toDegrees(2 * Math.atan(0.5 * mIntrinsics.height / mIntrinsics.fy))
         );
     }
+
 
     /**
      * Connects the view and renderer to the color camara and callbacks.
@@ -364,5 +382,31 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
                 mTango.getPoseAtTime(rgbTimestamp, FRAME_PAIR));
     }
 
+    private void endGame(){
+        Intent intent = new Intent(this, GameOverActivity.class);
+        String score = scoreView.toString();
+        intent.putExtra(MESSAGE, score);
 
+        startActivity(intent);
+    }
+
+    private void runThread() {
+
+        new Thread() {
+            public void run() {
+                while (mRenderer.gameOver.compareAndSet(false,false)) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(objectPlaced.get()){
+                                timeCurrent = System.currentTimeMillis();
+                                timeElapsed = (timeCurrent - timeStart)/1000;
+                                scoreView.setText(String.format("%5.2f",timeElapsed));
+                            }
+                        }
+                    });
+                }
+            }
+        }.start();
+    }
 }

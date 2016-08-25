@@ -4,4 +4,8 @@
     <string name="exception_out_of_date">"Tango service outdated!"</string>
     <string name="failed_measurement">Failed to fit plane</string>
     <string name="failed_permissions">Permissions required!</string>
+    <string name="score_box">Score is Here</string>
+    <string name="game_over_text">Game Over</string>
+    <string name="restart_button">Press to Restart</string>
+    <string name="end_score_box">GameOver score is Here</string>
 </resources>

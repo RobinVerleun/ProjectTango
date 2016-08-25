@@ -51,6 +51,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Very simple example augmented reality renderer which displays a cube fixed in place.
@@ -69,6 +70,7 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
     
     private boolean mObjectPoseUpdated = false;
     private TangoPoseData mDevicePose;
+    public AtomicBoolean gameOver = new AtomicBoolean(false);
 
     public ObjectFollowerRenderer(Context context) {
         super(context);
@@ -242,4 +244,5 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
     public int getNumberofObjects(){
         return mObjects.size();
     }
+
 }

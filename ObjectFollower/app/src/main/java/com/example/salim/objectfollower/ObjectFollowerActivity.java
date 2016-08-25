@@ -314,25 +314,9 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
     public boolean onTouch(View view, MotionEvent motionEvent) {
         objectPlaced.set(false);
         if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-            // Calculate click location in u,v (0;1) coordinates.
-            float u = motionEvent.getX() / view.getWidth();
-            float v = motionEvent.getY() / view.getHeight();
             try {
-                // Grab a chunk of the latest point cloud data
-                // Synchronize against concurrent access to the RGB timestamp in the OpenGL thread
-                // and a possible service disconnection due to an onPause event.
-                Vector3 rgbPoint;
-                synchronized (this) {
-                    rgbPoint = getDepthAtTouchPosition(u, v, mRgbTimestampGlThread);
-                }
-
-                if (rgbPoint != null) {
-                    // Update the position of the rendered sphere to the pose of the detected point
-                    // This update is made thread safe by the renderer
-                    mRenderer.updateObjectPose(rgbPoint);
-                    objectPlaced.set(true);
-                }
-
+                mRenderer.spawnObjects();
+                objectPlaced.set(true);
             } catch (TangoException t) {
                 Toast.makeText(getApplicationContext(),
                         R.string.failed_measurement,

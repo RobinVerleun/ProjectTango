@@ -49,6 +49,8 @@ import com.projecttango.tangosupport.TangoSupport;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Very simple example augmented reality renderer which displays a cube fixed in place.
@@ -63,7 +65,6 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
     private boolean mSceneCameraConfigured;
 
     //private Object3D mObject;
-    private Pose mObjectPose;
     private ArrayList<Object3D> mObjects = new ArrayList<Object3D>();
     
     private boolean mObjectPoseUpdated = false;
@@ -134,12 +135,16 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
         // Synchronize against concurrent access with the setter below.
         synchronized (this) {
             if (mObjectPoseUpdated) {
-                // Place the 3D object in the location of the detected point.
-                mObjects.get(0).setPosition(mObjectPose.getPosition().add(-0.5,-0.25,0));
-                mObjects.get(0).setOrientation(mObjectPose.getOrientation());
 
-                mObjects.get(1).setPosition(mObjectPose.getPosition().add(0.5,0.25,0));
-                mObjects.get(1).setOrientation(mObjectPose.getOrientation());
+                double start = -2;
+                double end = 2;
+                Random random = new Random();
+                // Place the 3D object in the location of the detected point.
+                mObjects.get(0).setPosition(start + (random.nextDouble() * (end - start)), start + (random.nextDouble() * (end - start)), start + (random.nextDouble() * (end - start)));
+                mObjects.get(0).setOrientation(new Quaternion(0, 0, 0, 0));
+
+                mObjects.get(1).setPosition(start + (random.nextDouble() * (end - start)), start + (random.nextDouble() * (end - start)), start + (random.nextDouble() * (end - start)));
+                mObjects.get(1).setOrientation(new Quaternion(0, 0, 0, 0));
 
                 mObjectPoseUpdated = false;
             }
@@ -151,8 +156,7 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
      * Save the updated plane fit pose to update the AR object on the next render pass.
      * This is synchronized against concurrent access in the render loop above.
      */
-    public synchronized void updateObjectPose(Vector3 onTouchPose) {
-        mObjectPose = new Pose(onTouchPose, new Quaternion(0.0, 0.0, 0.0, 0.0));
+    public synchronized void spawnObjects() {
         mObjectPoseUpdated = true;
     }
 

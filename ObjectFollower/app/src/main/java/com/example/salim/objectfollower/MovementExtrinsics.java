@@ -95,7 +95,7 @@ public final class MovementExtrinsics {
             rightLimit = 360 + rightLimit;
         }
 
-        System.out.println("Lower: " + lowerLimit + ", Mine: " + m_XYAngle + ", Upper: " + upperLimit);
+        //  System.out.println("Lower: " + lowerLimit + ", Mine: " + m_XYAngle + ", Upper: " + upperLimit);
 
         //Calculate if the sphere is on the screen vertically
         if(lowerLimit < m_XYAngle && upperLimit > m_XYAngle) {

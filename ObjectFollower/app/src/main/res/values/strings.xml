@@ -8,4 +8,6 @@
     <string name="game_over_text">Game Over</string>
     <string name="restart_button">Press to Restart</string>
     <string name="end_score_box">GameOver score is Here</string>
+    <string name="intro_text">Input amount of spheres below.</string>
+    <string name="intro_button_text">Press button when ready</string>
 </resources>

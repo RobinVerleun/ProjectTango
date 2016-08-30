@@ -21,7 +21,7 @@ public final class MovementExtrinsics {
     public static final int INDEX_YAW = 1;
     public static final int INDEX_ROLL = 2;
     private static final float OBJECT_SPEED = 0.004f;
-    private static final float OBJECT_THRESHOLD = 0.15f;
+    //private static final float OBJECT_THRESHOLD = 0.1f;
 
     private double mHorizontalFOV, mVerticalFOV, HorizontalCameraAngle, VerticalCameraAngle, oldVertAngle;
     private static AtomicBoolean firstRun = new AtomicBoolean(true);
@@ -42,18 +42,18 @@ public final class MovementExtrinsics {
     }
 
     public Vector3 calculateTravel(TangoPoseData mDevicePose, Vector3 ObjCoord){
-        float dampening_Factor = OBJECT_THRESHOLD * OBJECT_SPEED;
+     //   float dampening_Factor = OBJECT_THRESHOLD * OBJECT_SPEED;
         double ResultX, ResultY, ResultZ;
 
-        if(Math.abs((mDevicePose.translation[0] - ObjCoord.x) * (OBJECT_SPEED)) > dampening_Factor) {
+     //   if(Math.abs((mDevicePose.translation[0] - ObjCoord.x) * (OBJECT_SPEED)) > dampening_Factor) {
             ResultX = ((mDevicePose.translation[0] - ObjCoord.x) * (OBJECT_SPEED)); //Horizontal Movement
-        } else { ResultX = 0; }
-        if(Math.abs((mDevicePose.translation[1] - ObjCoord.z) * (OBJECT_SPEED)) > dampening_Factor) {
+     //   } else { ResultX = 0; }
+     //   if(Math.abs((mDevicePose.translation[1] - ObjCoord.z) * (OBJECT_SPEED)) > dampening_Factor) {
             ResultY = ((-1 * mDevicePose.translation[1] - ObjCoord.z) * (OBJECT_SPEED)); //Forward back Movement; Note: Tango Z-axis is negative of object Z-axis
-        } else { ResultY = 0; }
-        if(Math.abs((mDevicePose.translation[2] - ObjCoord.y) * (OBJECT_SPEED)) > dampening_Factor) {
+     //   } else { ResultY = 0; }
+     //   if(Math.abs((mDevicePose.translation[2] - ObjCoord.y) * (OBJECT_SPEED)) > dampening_Factor) {
             ResultZ = ((mDevicePose.translation[2] - ObjCoord.y) * (OBJECT_SPEED)); //Vertical Movement
-        } else { ResultZ = 0; }
+     //   } else { ResultZ = 0; }
 
         return new Vector3(ResultX, ResultZ, ResultY);
     }

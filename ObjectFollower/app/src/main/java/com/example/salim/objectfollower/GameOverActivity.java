@@ -20,7 +20,8 @@ public class GameOverActivity extends AppCompatActivity {
     }
 
     public void restartGame(View view){
-        Intent intent = new Intent(this, ObjectFollowerActivity.class);
+        Intent intent = new Intent(this, ObjectInputActivity.class);
         startActivity(intent);
+        finish();
     }
 }

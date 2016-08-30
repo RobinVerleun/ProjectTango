@@ -20,8 +20,6 @@ import com.google.atap.tangoservice.TangoPoseData;
 
 import android.content.Context;
 
-import android.graphics.drawable.GradientDrawable;
-import android.transition.Scene;
 import android.util.Log;
 import android.view.MotionEvent;
 
@@ -35,7 +33,6 @@ import org.rajawali3d.materials.textures.Texture;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.math.Quaternion;
 import org.rajawali3d.math.vector.Vector3;
-import org.rajawali3d.primitives.Cube;
 import org.rajawali3d.primitives.ScreenQuad;
 import org.rajawali3d.primitives.Sphere;
 import org.rajawali3d.renderer.RajawaliRenderer;
@@ -45,12 +42,9 @@ import javax.microedition.khronos.opengles.GL10;
 import com.projecttango.rajawali.DeviceExtrinsics;
 import com.projecttango.rajawali.Pose;
 import com.projecttango.rajawali.ScenePoseCalculator;
-import com.projecttango.tangosupport.TangoSupport;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -65,15 +59,17 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
     private ATexture mTangoCameraTexture;
     private boolean mSceneCameraConfigured;
 
-    //private Object3D mObject;
     private ArrayList<Object3D> mObjects = new ArrayList<Object3D>();
-    
     private boolean mObjectPoseUpdated = false;
-    private TangoPoseData mDevicePose;
     public AtomicBoolean gameOver = new AtomicBoolean(false);
 
-    public ObjectFollowerRenderer(Context context) {
+    public int sphereCount;
+    private int LOWER_RANDOM_LIMIT = -1;
+    private int UPPER_RANDOM_LIMIT = 1;
+
+    public ObjectFollowerRenderer(Context context, int sphereCount_) {
         super(context);
+        sphereCount = sphereCount_;
     }
 
     @Override
@@ -107,7 +103,7 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
         Material material = new Material();
         material.setColor(0xff009900);
         try {
-            Texture t = new Texture("instructions", R.drawable.instructions);
+            Texture t = new Texture("instructions", R.drawable.booface);
             material.addTexture(t);
         } catch (ATexture.TextureException e) {
             e.printStackTrace();
@@ -115,19 +111,14 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
         material.setColorInfluence(0.1f);
         material.enableLighting(true);
         material.setDiffuseMethod(new DiffuseMethod.Lambert());
-        
-        mObjects.add(new Sphere(0.075f,24,24));
-        mObjects.get(0).setMaterial(material);
-        mObjects.get(0).setPosition(0.5,0,-3);
-        mObjects.get(0).setRotation(Vector3.Axis.Z,180);
-        getCurrentScene().addChild(mObjects.get(0));
 
-
-        mObjects.add(new Sphere(0.075f,24,24));
-        mObjects.get(1).setMaterial(material);
-        mObjects.get(1).setPosition(-0.5,0,-3);
-        mObjects.get(1).setRotation(Vector3.Axis.Z, 180);
-        getCurrentScene().addChild(mObjects.get(1));
+        for(int i = 0; i < sphereCount; i++){
+            mObjects.add(new Sphere(0.075f, 24, 24));
+            mObjects.get(i).setMaterial(material);
+            mObjects.get(i).setPosition(0,0,0);
+            mObjects.get(i).setRotation(Vector3.Axis.Z, 180);
+            getCurrentScene().addChild(mObjects.get(i));
+        }
 
     }
 
@@ -138,16 +129,13 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
         synchronized (this) {
             if (mObjectPoseUpdated) {
 
-                double start = -2;
-                double end = 2;
                 Random random = new Random();
                 // Place the 3D object in the location of the detected point.
-                mObjects.get(0).setPosition(start + (random.nextDouble() * (end - start)), start + (random.nextDouble() * (end - start)), -2);
-                mObjects.get(0).setOrientation(new Quaternion(0, 0, 0, 0));
-
-                mObjects.get(1).setPosition(start + (random.nextDouble() * (end - start)), start + (random.nextDouble() * (end - start)), -2);
-                mObjects.get(1).setOrientation(new Quaternion(0, 0, 0, 0));
-
+                for(int i = 0; i < sphereCount; i++) {
+                    mObjects.get(i).setPosition(LOWER_RANDOM_LIMIT + (random.nextDouble() * (UPPER_RANDOM_LIMIT - LOWER_RANDOM_LIMIT)),
+                            LOWER_RANDOM_LIMIT + (random.nextDouble() * (UPPER_RANDOM_LIMIT - LOWER_RANDOM_LIMIT)), -2);
+                    mObjects.get(i).setOrientation(new Quaternion(0, 0, 0, 0));
+                }
                 mObjectPoseUpdated = false;
             }
         }
@@ -164,7 +152,7 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
 
     public synchronized void moveSphere(TangoPoseData currentPose, int index){
 
-        if(MovementExtrinsics.getInstance().calculateDistance(currentPose, mObjects.get(index).getPosition()) <= 0.5){
+        if(MovementExtrinsics.getInstance().calculateDistance(currentPose, mObjects.get(index).getPosition()) <= 0.3){
             synchronized (this) {
                 gameOver.set(true);
             }
@@ -173,7 +161,6 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
         mObjects.get(index).moveForward(coordinates.z);
         mObjects.get(index).moveRight(coordinates.x);
         mObjects.get(index).moveUp(coordinates.y);
-
     }
 
     /**
@@ -232,14 +219,6 @@ public class ObjectFollowerRenderer extends RajawaliRenderer {
     @Override
     public void onTouchEvent(MotionEvent event) {
 
-    }
-
-    public TangoPoseData getDevicePose() {
-        return mDevicePose;
-    }
-
-    public void setDevicePose(TangoPoseData mDevicePose) {
-        this.mDevicePose = mDevicePose;
     }
 
     public Vector3 getObjectPose(int index) {

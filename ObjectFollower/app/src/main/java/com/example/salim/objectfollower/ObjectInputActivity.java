@@ -3,6 +3,7 @@ package com.example.salim.objectfollower;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 
 public class ObjectInputActivity extends AppCompatActivity {
@@ -16,10 +17,11 @@ public class ObjectInputActivity extends AppCompatActivity {
         initObjectView = (TextView) findViewById(R.id.initText);
     }
 
-    public void enterGame(){
+    public void enterGame(View view){
         Intent intent = new Intent(this, ObjectFollowerActivity.class);
         String numberOfObjects = initObjectView.getText().toString();
         intent.putExtra(MESSAGE, numberOfObjects);
         startActivity(intent);
+        finish();
     }
 }

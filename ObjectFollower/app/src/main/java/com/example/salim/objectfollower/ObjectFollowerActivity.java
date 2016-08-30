@@ -16,7 +16,6 @@
 
 package com.example.salim.objectfollower;
 
-import com.example.salim.objectfollower.ObjectFollowerRenderer;
 import com.google.atap.tangoservice.Tango;
 import com.google.atap.tangoservice.Tango.OnTangoUpdateListener;
 import com.google.atap.tangoservice.TangoCameraIntrinsics;
@@ -31,11 +30,9 @@ import com.google.atap.tangoservice.TangoXyzIjData;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -86,9 +83,7 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
     private Tango mTango;
     private boolean mIsConnected = false;
     private double mCameraPoseTimestamp = 0;
-    private long timeStart;
-    private long timeCurrent;
-    private double timeElapsed;
+    private int sphereCount;
     private TextView scoreView;
 
     // Texture rendering related fields
@@ -109,11 +104,13 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
 
         scoreView = (TextView) findViewById(R.id.scoreView);
         mSurfaceView = (RajawaliSurfaceView) findViewById(R.id.ar_view);
-        mRenderer = new ObjectFollowerRenderer(this);
+        sphereCount = Integer.valueOf(getIntent().getStringExtra(ObjectInputActivity.MESSAGE));
+        mRenderer = new ObjectFollowerRenderer(this, sphereCount);
         mSurfaceView.setSurfaceRenderer(mRenderer);
         mSurfaceView.setZOrderOnTop(false);
         mSurfaceView.setOnTouchListener(this);
         mPointCloudManager = new TangoPointCloudManager();
+
     }
 
     @Override
@@ -385,29 +382,9 @@ public class ObjectFollowerActivity extends Activity implements View.OnTouchList
 
     private void endGame(){
         Intent intent = new Intent(this, GameOverActivity.class);
-        String score = String.format("%5.2f",timeElapsed);
+        String score = "Coming soon!";
         intent.putExtra(MESSAGE, score);
         startActivity(intent);
     }
 
-
-    private void runThread() {
-
-        new Thread() {
-            public void run() {
-                while (mRenderer.gameOver.compareAndSet(false,false)) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if(objectPlaced.get()){
-                                timeCurrent = System.currentTimeMillis();
-                                timeElapsed = (timeCurrent - timeStart)/1000;
-                                scoreView.setText(String.format("%5.2f",timeElapsed));
-                            }
-                        }
-                    });
-                }
-            }
-        }.start();
-    }
 }
